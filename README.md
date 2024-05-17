@@ -1,2 +1,2 @@
 # MestreTaverneiro
-Custom bot for a Discord Server
+ Bot de agendamento de mesas para servidores de RPG.
