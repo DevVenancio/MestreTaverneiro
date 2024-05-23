@@ -20,7 +20,7 @@ class AnunciosModal(Modal):
     announcement_embed.title = str(self.titulo_modal)
     
     announcement_embed.add_field(name='Sinopse', value=str(self.sinopse_modal), inline=False)
-    announcement_embed.add_field(name='Jogadores/Vagas', value=str(self.jogadores_modal), inline=False)
+    announcement_embed.add_field(name='Jogadores/Vagas', value=str(self.jogadores_modal), inline=True)
     announcement_embed.add_field(name='Dia e Hora', value=str(self.horario_modal), inline=False)
     
     announcement_embed.set_footer(text=str(self.observacao_modal))
@@ -36,9 +36,9 @@ class AnuncioView(View):
 class SistemaSelect(Select):
   def __init__(self):
     opt = [
-      discord.SelectOption(label='Dungeons & Dragons', emoji='🐲'),
-      discord.SelectOption(label='Tormenta 20', emoji='⚡'),
-      discord.SelectOption(label='Sistema Próprio', emoji='🛠️'),
+      discord.SelectOption(label='🐲 Dungeons & Dragons', emoji='🐲'),
+      discord.SelectOption(label='⚡ Tormenta 20', emoji='⚡'),
+      discord.SelectOption(label='🛠️ Sistema Próprio', emoji='🛠️'),
     ]
     super().__init__(placeholder='Sistema de RPG', options=opt, min_values=1, max_values=1)  
 
@@ -51,8 +51,8 @@ class SistemaSelect(Select):
 class TipoMesaSelect(Select):
   def __init__(self):
     opt = [
-      discord.SelectOption(label='Campanha', emoji='📚'),
-      discord.SelectOption(label='One Shot', emoji='📜'),
+      discord.SelectOption(label='📚 Campanha', emoji='📚'),
+      discord.SelectOption(label='📜 One Shot', emoji='📜'),
     ]
     super().__init__(placeholder='Tipo de Mesa', options=opt, min_values=1, max_values=1)
   
@@ -65,20 +65,22 @@ class TipoMesaSelect(Select):
 class CategoriasSelect(Select):
   def __init__(self):
     opt = [
-      discord.SelectOption(label='Fantasia', emoji='🧙🏻‍♂️'),
-      discord.SelectOption(label='Cyberpunk', emoji='🤖'),
-      discord.SelectOption(label='Medieval', emoji='⚔️'),
-      discord.SelectOption(label='Realista', emoji='🚶🏻‍♂️'),
+      discord.SelectOption(label='🧙🏻‍♂️ Fantasia', emoji='🧙🏻‍♂️'),
+      discord.SelectOption(label='🤖 Cyberpunk', emoji='🤖'),
+      discord.SelectOption(label='⚔️ Medieval', emoji='⚔️'),
+      discord.SelectOption(label='⚙️ Steampunk', emoji='⚙️'),
+      discord.SelectOption(label='🚶🏻‍♂️ Realista', emoji='🚶🏻‍♂️'),
     ]
-    super().__init__(placeholder='Categorias', options=opt)
+    super().__init__(placeholder='Categorias', options=opt, min_values=1, max_values=5)
   
   async def callback(self, interaction: discord.interactions):
-    for item in range(len(self.values)):
-      categ = f' - {self.values[item]}\n'
-    
+    self.values.append(" ")
+    self.values.reverse()
+
     self.disabled = True
-    announcement_embed.add_field(name='Categorias', value=categ, inline=False)
-    await interaction.response.send_message(f"Você selecionou: {self.values[0]}", ephemeral=True)
+    announcement_embed.add_field(name='Categorias', value='\n- '.join(self.values[item] for item in range(len(self.values))), inline=False)
+    self.disabled = True
+    await interaction.response.send_message(f"Você selecionou: {self.values}", ephemeral=True)
     await interaction.followup.send(view=AnuncioView(PlataformaSelect()), ephemeral=True)
     
 class PlataformaSelect(Select):
@@ -88,24 +90,23 @@ class PlataformaSelect(Select):
       discord.SelectOption(label='Roll20'),
       discord.SelectOption(label='Outros'),
     ]
-    super().__init__(placeholder='Plataformas', options=opt)
+    super().__init__(placeholder='Plataformas', options=opt, min_values=1, max_values=3)
   
   async def callback(self, interaction: discord.interactions):
-    for item in range(len(self.values)):
-      plat = f' - {self.values[item]}\n'
+    self.values.append(" ")
+    self.values.reverse()
     
     self.disabled = True
-    announcement_embed.add_field(name='Categorias', value=plat, inline=False)
-    await interaction.response.send_message(f"Você selecionou: {plat}", ephemeral=True)
+    announcement_embed.add_field(name='Plataformas', value='\n- '.join(self.values[item] for item in range(len(self.values))) , inline=False)
+    await interaction.response.send_message(f"Você selecionou: {self.values}", ephemeral=True)
     await interaction.followup.send(view=AnuncioView(FaixaEtariaSelect()), ephemeral=True)
     
     
 class FaixaEtariaSelect(Select):
   def __init__(self):
     opt = [
-      discord.SelectOption(label='Dungeons & Dragons', emoji='🐲'),
-      discord.SelectOption(label='Tormenta 20', emoji='⚡'),
-      discord.SelectOption(label='Sistema Próprio', emoji='🛠️')
+      discord.SelectOption(label='Menores de 18 anos', emoji='🧒🏻'),
+      discord.SelectOption(label='Maiores de 18 anos', emoji='👴🏻'),
     ]
     super().__init__(placeholder='Faixa Etária', options=opt, min_values=1, max_values=1)
   
